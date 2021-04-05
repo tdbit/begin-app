@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@architect/functions": "latest",
+    "@begin/data": "latest",
+    "googleapis": "^70.0.0"
+  }
+}

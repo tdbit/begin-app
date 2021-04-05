@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@architect/functions": "latest",
+    "@begin/data": "latest",
+    "canvas": "^2.7.0",
+    "node-fetch": "^2.6.1",
+    "sha1": "^1.1.1"
+  }
+}
