@@ -6,7 +6,7 @@ const { createCanvas, loadImage } = require("canvas");
 
 async function fetch(event) {
   let { image, thumbnail } = event;
-  // console.log("Fetching image: ", link);
+  console.log("Fetching image: ", link);
 
   // Fetch the thumbnail and store that because the image itself is too large for begin
   const canvas = createCanvas(thumbnail.width, thumbnail.height);
