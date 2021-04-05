@@ -8,11 +8,9 @@ post /search
 @static
 
 @events
-my-event
 search
 fetch
 analyse
-capture
 
 @tables
 data
