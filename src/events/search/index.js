@@ -1,4 +1,5 @@
 const arc = require("@architect/functions");
+const data = require("@begin/data");
 
 const { google } = require("googleapis");
 const customsearch = google.customsearch("v1");
@@ -29,12 +30,18 @@ async function search(event) {
   while (results.length < maxImages && startIndex < maxSerps * 10) {
     let response = await customsearch.cse.list(params);
     let results = response.data.items || [];
-    let onlySquare = true;
+    let onlySquare = !event.showAll;    // should take from event payload
 
     results.forEach((result) => {
-      // Filter for only square images
+      // Filter for only square images if r
       if (onlySquare && result.image.height != result.image.width) return;
 
+      // Save every result keyed by search query
+      let table = "queries";
+      let key = email
+      await data.set({ table, key, result });
+
+      // Dispatch the query and result to analyse
       let name = "analyse";
       let payload = { query, result };
       arc.events.publish({ name, payload });

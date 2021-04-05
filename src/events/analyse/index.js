@@ -10,9 +10,10 @@ async function analyse(event) {
   let name = "fetch";
   let payload = {
     image: {
-      link: result.image.link,
+      link: result.link,
       width: result.image.width,
       height: result.image.height,
+      format: result.fileFormat,
     },
     thumbnail: {
       link: result.image.thumbnailLink,
