@@ -32,20 +32,22 @@ async function search(event) {
     let results = response.data.items || [];
     let onlySquare = !event.showAll;    // should take from event payload
 
-    results.forEach((result) => {
+    for (let index = 0; index < results.length; index++) {
+      const result = results[index];
+
       // Filter for only square images if r
       if (onlySquare && result.image.height != result.image.width) return;
 
       // Save every result keyed by search query
       let table = "queries";
-      let key = email
+      let key = email;;
       await data.set({ table, key, result });
 
       // Dispatch the query and result to analyse
       let name = "analyse";
       let payload = { query, result };
       arc.events.publish({ name, payload });
-    });
+    }
 
     startIndex += 10;
   }
