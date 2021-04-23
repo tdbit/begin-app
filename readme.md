@@ -1,5 +1,5 @@
 <img src="https://static.begin.app/node-events/readme-banner.png" width="442">
-
+edit
 [![Begin build status](https://buildstatus.begin.app/lion-5a2/status.svg)](https://begin.com)
 
 Example app demonstrating publishing and subscribing to an event function.

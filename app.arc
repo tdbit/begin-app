@@ -2,6 +2,7 @@
 node-events
 
 @http
+get /email
 post /my-event
 post /search
 
@@ -11,6 +12,7 @@ post /search
 search
 fetch
 analyse
+capture
 
 @tables
 data

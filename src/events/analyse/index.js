@@ -1,4 +1,6 @@
 const arc = require("@architect/functions");
+const data = require("@begin/data");
+const sha1 = require("sha1")
 
 const fetch = require("node-fetch");
 const { createCanvas, loadImage } = require("canvas");
@@ -7,6 +9,9 @@ async function analyse(event) {
   let { result } = event;
   // console.log("Analysing image: ", result.link);
 
+
+  // Send off the image to be fetched
+  /*
   let name = "fetch";
   let payload = {
     image: {
@@ -22,8 +27,8 @@ async function analyse(event) {
     },
   };
   arc.events.publish({ name, payload });
+  */
 
-  return;
 
   // Initialize Pico library
   console.log("\tInitialize pico....");
@@ -37,14 +42,21 @@ async function analyse(event) {
   console.log("\t* cascade loaded");
 
   // Analyze image
-  const rows = result.image.height;
-  const cols = result.image.width;
+  // const rows = result.image.height;
+  // const cols = result.image.width;
+
+  // Analyze thumb 
+  const rows = result.image.thumbnailHeight
+  const cols = result.image.thumbnailWidth
 
   const canvas = createCanvas(cols, rows);
   const ctx = canvas.getContext("2d");
 
+  // console.log("\tFetching image...");
+  // const img = await loadImage(result.link);
+
   console.log("\tFetching image...");
-  const img = await loadImage(result.link);
+  const img = await loadImage(result.image.thumbnailLink);
 
   // re-draw the image to clear previous results and get its RGBA pixel data
   console.log(`\tDrawing ${cols}x${rows} image...`);
@@ -80,18 +92,32 @@ async function analyse(event) {
   for (i = 0; i < dets.length; ++i)
     // check if the detection score is over the threshold
     if (dets[i][3] > qthresh) {
+      let face = {
+        x: dets[i][1],
+        y: dets[i][0],
+        radius: dets[i][2] * 0.6, // Originally 50% but that seemed too tight
+      }
+
+      /* don't send to another fn for now just save here
       let name = "capture";
       let payload = {
         link: result.link,
         data: canvas.toDataURL(),
-        face: {
-          x: dets[i][1],
-          y: dets[i][0],
-          radius: dets[i][2] * 0.6, // Originally 50% but that seemed too tight
-        },
+        face
       };
       arc.events.publish({ name, payload });
+      */
 
+      // Save image data, along with link and face location
+
+      let table = "images"
+      let key = sha1(result.link);
+      let image = { link: result.link, data: canvas.toDataURL(), face };
+      console.log("save", key, image.link);
+      await data.set({ table, key, image });
+      let response = await data.get({ table, key });
+      console.log(response.image)
+      
       // circle faces if requested
       if (false) {
         ctx.beginPath();
@@ -111,6 +137,8 @@ exports.handler = arc.events.subscribe(analyse);
 const cascadePath =
   "nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder";
 const cascadeUrl = "https://raw.githubusercontent.com/" + cascadePath;
+
+// const cascadeUrl = "/facefinder-cascade"
 
 const pico = {
   facefinder_classify_region(r, c, s, pixels, ldim) {
